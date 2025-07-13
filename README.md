@@ -2,4 +2,4 @@
 
 Designed for intention. Built for clarity.
 
-slate-playground.github.io/home
+![Checkout - slate-playground.github.io/home](slate-playground.github.io/home)
