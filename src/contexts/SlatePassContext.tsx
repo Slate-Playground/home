@@ -502,7 +502,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
               table: 'slate_pass_users',
               filter: `id=eq.${user.id}`
             },
-            async (payload) => {
+            async (payload: any) => {
               console.log('User profile updated:', payload)
               const updatedProfile = await fetchUserProfile(user.id)
               setUserProfile(updatedProfile)
@@ -521,7 +521,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
               table: 'user_activity',
               filter: `user_id=eq.${user.id}`
             },
-            async (payload) => {
+            async (payload: any) => {
               console.log('User activity updated:', payload)
               const updatedActivities = await fetchUserActivities(user.id)
               setUserActivities(updatedActivities)
@@ -544,7 +544,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
               table: 'user_sessions',
               filter: `user_id=eq.${user.id}`
             },
-            async (payload) => {
+            async (payload: any) => {
               console.log('User session updated:', payload)
               const updatedSessions = await fetchUserSessions(user.id)
               setUserSessions(updatedSessions)
