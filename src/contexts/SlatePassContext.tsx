@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { createClient } from '../lib/supabase'
 
 // Comprehensive interfaces based on your Supabase schema
@@ -126,10 +126,19 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
   })
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  const [supabase, setSupabase] = useState<ReturnType<typeof createClient> | null>(null)
+
+  // Initialize Supabase client lazily to avoid issues during static generation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSupabase(createClient())
+    }
+  }, [])
 
   // Fetch user profile from slate_pass_users table
   const fetchUserProfile = async (userId: string) => {
+    if (!supabase) return null
+    
     try {
       const { data, error } = await supabase
         .from('slate_pass_users')
@@ -151,6 +160,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Create user profile in slate_pass_users table
   const createUserProfile = async (userId: string, email: string, name: string) => {
+    if (!supabase) return null
+    
     try {
       const { data, error } = await supabase
         .from('slate_pass_users')
@@ -186,6 +197,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch user settings from user_profiles table
   const fetchUserSettings = async (userId: string) => {
+    if (!supabase) return null
+    
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -207,6 +220,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch user sessions from user_sessions table
   const fetchUserSessions = async (userId: string) => {
+    if (!supabase) return []
+    
     try {
       const { data, error } = await supabase
         .from('user_sessions')
@@ -236,6 +251,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch user activities from user_activity table
   const fetchUserActivities = async (userId: string) => {
+    if (!supabase) return []
+    
     try {
       const { data, error } = await supabase
         .from('user_activity')
@@ -266,6 +283,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch apps from apps table
   const fetchApps = async () => {
+    if (!supabase) return []
+    
     try {
       const { data, error } = await supabase
         .from('apps')
@@ -298,6 +317,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch user ratings from ratings table
   const fetchUserRatings = async (userId: string) => {
+    if (!supabase) return []
+    
     try {
       const { data, error } = await supabase
         .from('ratings')
@@ -398,6 +419,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    if (!supabase) return
+
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -418,7 +441,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         setSession(session)
         setUser(session?.user ?? null)
         
@@ -464,6 +487,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
     let userSessionSubscription: any = null
 
     const setupRealtimeSubscriptions = async () => {
+      if (!supabase) return
+      
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         // Subscribe to user profile changes
@@ -545,6 +570,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
   }, [supabase.auth])
 
   const signIn = async (email: string, password: string) => {
+    if (!supabase) return { error: new Error('Supabase not initialized') }
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -553,6 +579,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, name: string) => {
+    if (!supabase) return { error: new Error('Supabase not initialized') }
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -567,10 +594,12 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
   }
 
   const resetPassword = async (email: string) => {
+    if (!supabase) return { error: new Error('Supabase not initialized') }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
@@ -579,6 +608,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (updates: Partial<SlateUserProfile>) => {
     if (!user) return { error: new Error('No user logged in') }
+    if (!supabase) return { error: new Error('Supabase not initialized') }
 
     try {
       const { data, error } = await supabase
@@ -603,6 +633,7 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
 
   const updateSettings = async (updates: Partial<UserProfile>) => {
     if (!user) return { error: new Error('No user logged in') }
+    if (!supabase) return { error: new Error('Supabase not initialized') }
 
     try {
       const { data, error } = await supabase
