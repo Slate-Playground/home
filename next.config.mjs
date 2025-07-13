@@ -9,10 +9,6 @@ const nextConfig = {
   // Always enable static export
   output: 'export',
   trailingSlash: true,
-  // Disable server-side features for static export
-  experimental: {
-    appDir: true,
-  },
 }
 
 export default nextConfig
