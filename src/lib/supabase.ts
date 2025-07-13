@@ -7,36 +7,9 @@ export function createClient() {
     return supabaseClient
   }
 
-  // For static export, these will be replaced at build time
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co'
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key'
-
-
-
-  // Check if we're using placeholder values (which means env vars weren't set)
-  if (supabaseUrl === 'https://your-project.supabase.co' || supabaseAnonKey === 'your-anon-key') {
-    console.warn('Supabase environment variables not configured. Using demo mode.')
-    // Return a mock client for demo mode
-    return {
-      auth: {
-        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-        signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
-        signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
-        signOut: () => Promise.resolve({ error: null }),
-        resetPasswordForEmail: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
-        getUser: () => Promise.resolve({ data: { user: null }, error: null })
-      },
-      from: () => ({
-        select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
-        insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
-        update: () => ({ eq: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }) })
-      }),
-      channel: () => ({
-        on: () => ({ subscribe: () => Promise.resolve({ data: { subscription: { unsubscribe: () => {} } } }) })
-      })
-    } as any
-  }
+  // Hardcoded Supabase configuration (safe to expose - these are public keys)
+  const supabaseUrl = 'https://vibnwcdfwcevljszkzbv.supabase.co'
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpYm53Y2Rmd2Nldmxqc3premJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMDg2NTQsImV4cCI6MjA2Nzg4NDY1NH0.uuYDTPljuFGlNH1mQKtW3hdoJquqpeLIhRULeShyIng'
 
   supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey)
   return supabaseClient
