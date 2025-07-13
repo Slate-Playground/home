@@ -562,12 +562,12 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
     setTimeout(setupRealtimeSubscriptions, 1000)
 
     return () => {
-      subscription.unsubscribe()
+      if (subscription) subscription.unsubscribe()
       if (userProfileSubscription) userProfileSubscription.unsubscribe()
       if (userActivitySubscription) userActivitySubscription.unsubscribe()
       if (userSessionSubscription) userSessionSubscription.unsubscribe()
     }
-  }, [supabase.auth])
+  }, [supabase])
 
   const signIn = async (email: string, password: string) => {
     if (!supabase) return { error: new Error('Supabase not initialized') }
