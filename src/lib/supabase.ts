@@ -7,19 +7,23 @@ export function createClient() {
     return supabaseClient
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // For static export, these will be replaced at build time
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co'
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key'
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    // Return a mock client for static generation
+  // Check if we're using placeholder values (which means env vars weren't set)
+  if (supabaseUrl === 'https://your-project.supabase.co' || supabaseAnonKey === 'your-anon-key') {
+    console.warn('Supabase environment variables not configured. Using demo mode.')
+    // Return a mock client for demo mode
     return {
       auth: {
         getSession: () => Promise.resolve({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-        signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-        signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+        signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
+        signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
         signOut: () => Promise.resolve({ error: null }),
-        resetPasswordForEmail: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } })
+        resetPasswordForEmail: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured - please set environment variables' } }),
+        getUser: () => Promise.resolve({ data: { user: null }, error: null })
       },
       from: () => ({
         select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
