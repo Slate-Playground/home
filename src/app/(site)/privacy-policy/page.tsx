@@ -15,8 +15,8 @@ export default function Page() {
                     <div className='flex flex-col gap-8'>
                         <div className='text-center max-w-4xl mx-auto'>
                             <h1 className='md:text-6xl text-4xl font-bold mb-6'>
-                                Privacy Policy
-                            </h1>
+                            Privacy Policy
+                        </h1>
                             <p className='text-xl text-dark_black/70 dark:text-white/70 leading-relaxed'>
                                 How we protect your privacy and handle your data at Slate.
                             </p>
@@ -104,7 +104,7 @@ export default function Page() {
                                         <p className='text-dark_black/70 dark:text-white/70 leading-relaxed'>
                                             We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on our website and updating the "Last Updated" date.
                                         </p>
-                                    </div>
+                            </div>
 
                                     <div>
                                         <h3 className='text-2xl font-bold text-dark_black dark:text-white mb-4'>Contact Us</h3>

@@ -6,8 +6,8 @@ import CreativeMind from "./components/home/creative-mind";
 import Subscription from "./components/home/subscription";
 
 export const metadata: Metadata = {
-    title: "Slate Link - A Minimalist Offline-First Companion Device",
-    description: "Slate Link is a minimalist offline-first companion device built to help you think, focus, and live better. A tiny emotional computer built to be quietly powerful.",
+    title: "Slate | Introducing Slate Link – The Minimalist Offline-First Device",
+    description: "Experience focus, clarity, and intention. Slate Link is the new minimalist companion device from Slate. Designed for those who value presence over distraction. Join the waitlist for early access.",
 };
 
 export default function Home() {
