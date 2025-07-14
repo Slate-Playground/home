@@ -23,6 +23,7 @@ export default function RootLayout({
         <link rel="canonical" href="https://slate-playground.github.io/home/" />
         <meta name="robots" content="index, follow" />
         <meta name="googlebot" content="index, follow" />
+        <meta name="google-site-verification" content="iRULVkB_YtQUDw3VuVHEm2NMbCAf7xNLwC04iawfkSM" />
         <meta name="description" content="Slate Link is a minimalist offline-first companion device built to help you think, focus, and live better. A tiny emotional computer built to be quietly powerful." />
         <meta property="og:title" content="Slate Link - A Minimalist Offline-First Companion Device" />
         <meta property="og:description" content="Slate Link is a minimalist offline-first companion device built to help you think, focus, and live better. A tiny emotional computer built to be quietly powerful." />
