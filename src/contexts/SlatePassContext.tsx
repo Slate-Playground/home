@@ -104,6 +104,8 @@ interface SlatePassContextType {
   updateSettings: (updates: Partial<UserProfile>) => Promise<{ error: any }>
   fetchUserData: (userId: string) => Promise<void>
   refreshUserData: () => Promise<void>
+  joinWaitlist: (message?: string) => Promise<{ error: any }>
+  getWaitlistStatus: () => Promise<boolean>
 }
 
 const SlatePassContext = createContext<SlatePassContextType | undefined>(undefined)
@@ -418,6 +420,34 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Waitlist logic
+  const joinWaitlist = async (message?: string) => {
+    if (!supabase || !user) return { error: new Error('Not authenticated') }
+    // Prevent duplicate entries
+    const { data: existing, error: selectError } = await supabase
+      .from('waitlist')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+    if (existing) return { error: null } // Already joined
+    if (selectError && selectError.code !== 'PGRST116') return { error: selectError }
+    // Insert new entry
+    const { error } = await supabase
+      .from('waitlist')
+      .insert({ user_id: user.id, email: user.email, message })
+    return { error }
+  }
+
+  const getWaitlistStatus = async () => {
+    if (!supabase || !user) return false
+    const { data, error } = await supabase
+      .from('waitlist')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+    return !!data
+  }
+
   useEffect(() => {
     if (!supabase) return
 
@@ -675,6 +705,8 @@ export function SlatePassProvider({ children }: { children: React.ReactNode }) {
     updateSettings,
     fetchUserData,
     refreshUserData,
+    joinWaitlist,
+    getWaitlistStatus,
   }
 
   return (

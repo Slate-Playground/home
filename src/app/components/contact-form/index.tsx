@@ -1,11 +1,15 @@
 'use client'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, CheckCircle, Loader2, Heart } from 'lucide-react'
+import { useSlatePass } from '../../../contexts/SlatePassContext'
+import { useRouter } from 'next/navigation'
 
 function ContactForm() {
+  const { user, joinWaitlist, getWaitlistStatus, signIn } = useSlatePass()
+  const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,7 +20,16 @@ function ContactForm() {
   const [loader, setLoader] = useState(false)
   const [progress, setProgress] = useState(0)
   const [currentStep, setCurrentStep] = useState('')
+  const [alreadyJoined, setAlreadyJoined] = useState(false)
+  const [error, setError] = useState('')
   
+  // Check waitlist status on mount if logged in
+  useEffect(() => {
+    if (user) {
+      getWaitlistStatus().then(setAlreadyJoined)
+    }
+  }, [user])
+
   const handleChange = (e: any) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
@@ -39,28 +52,56 @@ function ContactForm() {
     setLoader(true)
     setProgress(0)
     setCurrentStep('Preparing your message...')
+    setError('')
 
-    // Simulate realistic form submission with progress
+    // If already joined, show confirmation
+    if (alreadyJoined) {
+      setSubmitted(true)
+      setLoader(false)
+      return
+    }
+
+    // Simulate progress
     const steps = [
       { progress: 25, step: 'Validating your information...' },
       { progress: 50, step: 'Connecting to our servers...' },
       { progress: 75, step: 'Sending your message...' },
       { progress: 100, step: 'Message sent successfully!' }
     ]
-
     for (let i = 0; i < steps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 800))
+      await new Promise(resolve => setTimeout(resolve, 400))
       setProgress(steps[i].progress)
       setCurrentStep(steps[i].step)
     }
 
+    // Join waitlist in Supabase
+    const { error } = await joinWaitlist(formData.message)
+    if (error) {
+      setError(error.message || 'Something went wrong. Please try again.')
+      setLoader(false)
+      return
+    }
     setTimeout(() => {
       setSubmitted(true)
-      reset()
       setLoader(false)
       setProgress(0)
       setCurrentStep('')
+      setAlreadyJoined(true)
+      reset()
     }, 500)
+  }
+
+  if (!user) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-[40vh]'>
+        <p className='text-lg mb-6'>Sign in to join the waitlist and get early access to Slate Link.</p>
+        <button
+          onClick={() => router.push('/signin')}
+          className='bg-gradient-to-r from-purple-600 to-emerald-600 text-white font-semibold py-4 px-8 rounded-2xl hover:shadow-xl hover:scale-105 transition-all duration-300'>
+          Sign In / Create Account
+        </button>
+      </div>
+    )
   }
 
   return (
