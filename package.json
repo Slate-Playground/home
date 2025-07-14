@@ -1,6 +1,7 @@
 {
-  "name": "awake_project",
+  "name": "slate",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
